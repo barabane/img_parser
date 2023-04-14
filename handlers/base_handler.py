@@ -1,5 +1,6 @@
 import vk
 import os
+from time import sleep
 from aiogram import Router
 from aiogram.types import Message, InputMediaPhoto
 from aiogram.filters import CommandStart
@@ -14,17 +15,24 @@ session = vk.API(
 groups_id = ['-202233169', '-177572334', '-123224791']
 
 
-@ router.message(CommandStart())
+@router.message(CommandStart())
 async def start_handler(msg: Message):
     for _id in groups_id:
         post = session.wall.get(owner_id=_id, count=1, v=5.92)
         is_ads = post['items'][0]['marked_as_ads']
-
-        if is_ads:
-            continue
-
         medias = session.wall.get(
             owner_id=_id, count=1, v=5.92)['items'][0]['attachments']
+        if is_ads:
+            continue
+        elif not medias:
+            continue
+
+        if db.find_post(_id, post['items'][0]['hash']) == False:
+            db.add_post(_id, post['items'][0]['hash'])
+        else:
+            await msg.answer('Такой пост уже был...')
+            sleep(3)
+            continue
 
         photo_album = []
         for media in medias:

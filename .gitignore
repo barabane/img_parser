@@ -3,7 +3,6 @@
 *.orig
 
 *.db
-database
 
 # Created by git when using merge tools for conflicts
 *.BACKUP.*
