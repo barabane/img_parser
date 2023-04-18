@@ -8,7 +8,8 @@ class DB:
 
     def init_db(self):
         self.cur.execute('''CREATE TABLE IF NOT EXISTS posts(
-            group_id TEXT PRIMARY KEY,
+            id INT PRIMARY KEY AUTOINCREMENT,
+            group_id TEXT,
             post_hash TEXT
         )''')
         self.conn.commit()
@@ -16,7 +17,12 @@ class DB:
     def find_post(self, group_id: str, post_hash: str):
         self.cur.execute(
             f"SELECT DISTINCT post_hash FROM posts WHERE group_id='{group_id}' AND post_hash='{post_hash}'")
-        return self.cur.fetchone()
+
+        is_post_exists = self.cur.fetchone()
+
+        if is_post_exists:
+            return is_post_exists[0]
+        return None
 
     def add_post(self, group_id: str, post_hash: str):
         self.cur.execute(
